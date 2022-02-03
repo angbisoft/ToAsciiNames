@@ -21,8 +21,12 @@ namespace ToAsciiNames {
             dirs.Item1.ForEach(x => ProcessFolderImpl(x));
             var files = LanguageUtils.IgnoreErrors(() => dirRoot.EnumerateFiles().ToList(), new List<FileInfo>());
             files.Item1.ForEach(x => ProcessFile(x));
-
-            Serilog.Log.Information($"ProcessFolderImpl : {dirRoot.FullName}");
+            var newName = ToAsciiNameConverter.Convert(dirRoot.Name, "unknown_folder");
+            string destDirName = Path.Combine(dirRoot.Parent.FullName, newName);
+            if (dirRoot.FullName != destDirName) {
+                LanguageUtils.IgnoreErrors(() => Directory.Move(dirRoot.FullName, destDirName));
+            }
+            Serilog.Log.Information($"ProcessFolderImpl : {newName}");
             return this;
         }
 
@@ -33,6 +37,7 @@ namespace ToAsciiNames {
                 newName = $"{newName}{ext}";
             }
             // Serilog.Log.Information($"ProcessFile : {file.Name}==> {newName}");
+            LanguageUtils.IgnoreErrors(() => File.Move(file.FullName, Path.Combine(file.DirectoryName, newName)));
             Serilog.Log.Information($" {newName}");
         }
     }
