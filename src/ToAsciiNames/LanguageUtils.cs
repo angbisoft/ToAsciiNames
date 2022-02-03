@@ -10,7 +10,7 @@ namespace ToAsciiNames {
         /// </summary>
         /// <param name="operation">lambda that performs an operation that might throw</param>
         /// <returns></returns>
-        public static Tuple<bool, Exception> IgnoreErrors(Action operation, string errorMessage = "Hata oluştu!") {
+        public static Tuple<bool, Exception> IgnoreErrors(Action operation, string errorMessage = "Error Occurred!") {
             if (operation == null)
                 return Tuple.Create<bool, Exception>(false, null);
             try {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -16,8 +17,10 @@ namespace ToAsciiNames {
         }
 
         private FolderRenamer ProcessFolderImpl(DirectoryInfo dirRoot) {
-            dirRoot.EnumerateDirectories().ToList();
-            throw new NotImplementedException();
+            var dirs = LanguageUtils.IgnoreErrors(() => dirRoot.EnumerateDirectories().ToList(), new List<DirectoryInfo>());
+            dirs.Item1.ForEach(x => ProcessFolderImpl(x));
+            Serilog.Log.Information($"ProcessFolderImpl : {dirRoot.FullName}");
+            return this;
         }
     }
 }
