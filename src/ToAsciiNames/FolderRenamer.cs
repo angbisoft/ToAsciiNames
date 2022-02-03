@@ -19,8 +19,21 @@ namespace ToAsciiNames {
         private FolderRenamer ProcessFolderImpl(DirectoryInfo dirRoot) {
             var dirs = LanguageUtils.IgnoreErrors(() => dirRoot.EnumerateDirectories().ToList(), new List<DirectoryInfo>());
             dirs.Item1.ForEach(x => ProcessFolderImpl(x));
+            var files = LanguageUtils.IgnoreErrors(() => dirRoot.EnumerateFiles().ToList(), new List<FileInfo>());
+            files.Item1.ForEach(x => ProcessFile(x));
+
             Serilog.Log.Information($"ProcessFolderImpl : {dirRoot.FullName}");
             return this;
+        }
+
+        private void ProcessFile(FileInfo file) {
+            var ext = file.Extension;
+            var newName = ToAsciiNameConverter.Convert(Path.GetFileNameWithoutExtension(file.Name), "unknown_file");
+            if (!string.IsNullOrWhiteSpace(ext)) {
+                newName = $"{newName}{ext}";
+            }
+            // Serilog.Log.Information($"ProcessFile : {file.Name}==> {newName}");
+            Serilog.Log.Information($" {newName}");
         }
     }
 }
